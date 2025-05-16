@@ -1,0 +1,102 @@
+.sidebar-container {
+  width: 250px;
+  background: linear-gradient(135deg, #ff6f61 0%, #de4d7b 100%) !important; /* Gradient background */
+  padding-top: 10px;
+  height: 100vh;
+  overflow-y: auto; /* Allow scrolling */
+  scrollbar-width: none; /* Hide scrollbar for Firefox */
+}
+
+/* Hide scrollbar for Chrome, Safari, and Edge */
+.sidebar-container::-webkit-scrollbar {
+  display: none;
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  text-align: center;
+  border-bottom: none; /* Remove border */
+}
+
+.sidebar-logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.sidebar-logo {
+  width: 50px;
+  height: 50px;
+  margin-right: 10px;
+  border-radius: 50%; /* Make logo circular */
+}
+
+.sidebar-title {
+  font-weight: bold;
+  font-size: 1.5rem;
+  color: #fff; /* White text */
+}
+
+.sidebar-item {
+  color: #fff;
+  padding: 10px 20px 10px 0; /* Remove left padding, keep right padding */
+  border-radius: 10px;
+  margin: 5px 15px 5px 0; /* Remove left margin, keep right margin */
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* Align items to the left */
+  text-decoration: none;
+  transition: background-color 0.3s ease, transform 0.2s;
+}
+
+/* Ensure the icon and text are aligned to the left */
+.sidebar-icon {
+  color: #fff !important;
+  margin-right: 10px;
+  margin-left: 15px; /* Add a little space for the icon from the left edge */
+}
+
+.sidebar-item:hover {
+  background-color: rgba(255, 255, 255, 0.2) !important; /* Hover effect */
+}
+
+.sidebar-item.active {
+  background-color: #fff !important;
+  color: #ff6f61 !important; /* Active item text color */
+}
+
+.sidebar-icon.active {
+  color: #ff6f61 !important; /* Active icon color */
+}
+
+/* Update the responsive design */
+@media (max-width: 768px) {
+  .sidebar-container {
+    width: 60px;
+  }
+
+  .sidebar-title {
+    opacity: 0;
+    font-size: 0;
+  }
+
+  .sidebar-logo {
+    margin-right: 0;
+  }
+
+  .sidebar-item {
+    justify-content: center; /* For smaller screens, center the icons */
+    padding: 10px 0; /* Remove left/right padding */
+    margin: 5px 0; /* Remove left/right margin */
+  }
+
+  .sidebar-item .MuiListItemText-root {
+    display: none; /* Hides text on smaller screens */
+  }
+
+  .sidebar-icon {
+    margin-left: 0; /* Remove left margin for icons on smaller screens */
+  }
+}

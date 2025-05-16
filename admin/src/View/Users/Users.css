@@ -1,0 +1,134 @@
+.user-content-section {
+  min-height: 100vh;
+  margin-top: 80px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+  
+#userTable {
+  margin-top: 20px;
+}
+  
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+  
+th, td {
+  border: 1px solid #ddd;
+  padding: 14px;
+  text-align: center;
+}
+  
+th {
+  background-color: #34495e;
+  color: #ecf0f1;
+  font-weight: normal;
+  font-size: 18px;
+}
+  
+/* Updated button styles to match the image */
+.user-content-section .user-table .custom-edit-button {
+  background-color: #4FC3F7 !important; /* Light blue from the image */
+  color: white !important;
+  border: none !important;
+  padding: 8px !important;
+  cursor: pointer !important;
+  border-radius: 8px !important; /* Rounded corners */
+  font-size: 14px !important;
+  width: 60px !important; /* Square shape */
+  height: 60px !important; /* Square shape */
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  margin: 0 auto 5px !important; /* Center the button and add margin */
+  transition: background-color 0.3s !important;
+}
+
+.user-content-section .user-table .custom-delete-button {
+  background-color: #EF5350 !important; /* Red from the image */
+  color: white !important;
+  border: none !important;
+  padding: 8px !important;
+  cursor: pointer !important;
+  border-radius: 8px !important; /* Rounded corners */
+  font-size: 14px !important;
+  width: 60px !important; /* Square shape */
+  height: 60px !important; /* Square shape */
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  margin: 0 auto !important; /* Center the button */
+  transition: background-color 0.3s !important;
+}
+  
+.user-content-section .user-table .custom-edit-button:hover {
+  background-color: #29B6F6 !important; /* Darker blue on hover */
+}
+
+.user-content-section .user-table .custom-delete-button:hover {
+  background-color: #E53935 !important; /* Darker red on hover */
+}
+  
+/* Nút thêm người dùng */
+.user-floating-btn {
+  background-color: #3498db;
+  color: #fff;
+  border: none;
+  padding: 15px;
+  font-size: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.user-floating-btn:hover {
+  background-color: #2980b9;
+}
+  
+/* CSS cho header-section */
+.user-header-section {
+  display: flex;
+  justify-content: center;  /* Canh giữa tất cả các phần tử */
+  align-items: center;
+  margin-bottom: 20px;
+  position: relative;
+}
+  
+/* CSS cho thanh tìm kiếm */
+.user-search-container {
+  position: relative;
+  width: 500px;
+}
+.user-search-icon {
+  position: absolute;
+  top: 40%;
+  right: 10px; 
+  transform: translateY(-50%);
+  color: #7f8c8d;
+  font-size: 18px;
+}
+
+.user-search-input {
+  width: 100%;
+  padding: 10px 40px 10px 10px; 
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 18px;
+  transition: border-color 0.3s ease;
+}
+
+.user-search-input:focus {
+  border-color: #3498db;
+  outline: none;
+}

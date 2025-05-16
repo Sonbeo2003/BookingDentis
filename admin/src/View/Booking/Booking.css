@@ -1,0 +1,226 @@
+.booking-content-section {
+  min-height: 100vh;
+  margin-top: 70px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.date-filter-container {
+  display: flex;
+  margin-bottom: 20px;
+  gap: 10px;
+  padding: 15px;
+}
+
+.date-filter-container label {
+  margin-right: 10px;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.date-input {
+  padding: 5px;
+  margin-right: 10px;
+  border: 1px solid #8bc34a; /* Màu viền xanh lá cây nhạt */
+  border-radius: 4px;
+  font-size: 14px;
+  width: 150px;
+}
+
+/* Nút tìm kiếm và tải lại */
+.search-button,
+.reload-button {
+  padding: 10px 20px;
+  margin-left: 10px;
+  font-size: 14px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  white-space: nowrap;
+}
+
+.search-button {
+  background-color: #03a9f4; /* Xanh dương nhạt */
+  color: white;
+}
+
+.search-button:hover {
+  background-color: #0288d1; /* Xanh dương đậm hơn */
+}
+
+.reload-button {
+  background-color: #f44336; /* Đỏ nhạt */
+  color: white;
+}
+
+.reload-button:hover {
+  background-color: #d32f2f; /* Đỏ đậm hơn */
+}
+
+.search-button, .reload-button {
+  height: 40px;
+}
+
+/* Tabs trạng thái */
+.status-tabs {
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.status-tabs .status-tab {
+  background-color: #8bc34a; /* Xanh lá cây nhạt */
+  padding: 10px 20px;
+  border: 1px solid #c8e6c9; /* Viền xanh lá nhạt */
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.status-tabs .status-tab:hover {
+  background-color: #4caf50; /* Xanh lá cây tươi */
+  color: white;
+}
+
+.status-tabs .status-tab.Mui-selected {
+  background-color: #4caf50; /* Xanh lá cây tươi */
+  color: white;
+  text-decoration: none !important;
+}
+
+/* Nút xác nhận và hủy */
+.confirm-button {
+  background-color: #03a9f4; /* Xanh dương nhạt */
+  color: #ffffff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.confirm-button:hover {
+  background-color: #0288d1; /* Xanh dương đậm hơn */
+}
+
+.confirm-button:active {
+  background-color: #0277bd; /* Xanh dương đậm hơn nữa */
+}
+
+.cancel-button {
+  background-color: #ff5722; /* Cam đậm */
+  color: #ffffff; 
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 10px;
+  width: 105px;
+}
+
+.cancel-button:hover {
+  background-color: #e64a19; /* Cam tối hơn */
+}
+
+.cancel-button:active {
+  background-color: #d84315; /* Cam tối hơn nữa */
+}
+
+/* Nút hoàn thành */
+.complete-button {
+  background-color: #ffc107; /* Vàng nhạt */
+  color: #ffffff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.complete-button:hover {
+  background-color: #ffb300; /* Vàng đậm */
+}
+
+.complete-button:active {
+  background-color: #ffa000; /* Vàng đậm hơn */
+}
+
+/* Nút thanh toán */
+.pay-button {
+  background-color: #673ab7; /* Tím đậm */
+  color: #ffffff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.pay-button:hover {
+  background-color: #512da8; /* Tím tối hơn */
+}
+
+.pay-button:active {
+  background-color: #4527a0; /* Tím tối hơn nữa */
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 400px;
+  width: 100%;
+}
+
+textarea {
+  width: 100%;
+  height: 100px;
+  margin-bottom: 10px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+}
+
+.button-modal-actions {
+  background-color: #03a9f4; /* Xanh dương nhạt */
+  color: #ffffff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.button-modal-actions:disabled {
+  background-color: gray;
+}
+
+.close-button {
+  background-color: #e91e63; /* Hồng đậm */
+  color: #ffffff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.close-button:hover {
+  background-color: #c2185b; /* Hồng tối hơn */
+}

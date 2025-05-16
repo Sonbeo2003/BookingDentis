@@ -1,0 +1,75 @@
+.serviceCenter-content-section {
+    min-height: 100vh; 
+    margin-top: 70px;
+    box-sizing: border-box; 
+    display: flex;
+    flex-direction: column;
+}
+
+#serviceCenterTable {
+    margin-top: 20px;
+}
+  
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+  
+th, td {
+    border: 1px solid #ddd;
+    padding: 14px;
+    text-align: center;
+}
+  
+th {
+    background-color: #34495e;
+    color: #ecf0f1;
+    font-weight: normal;
+    font-size: 18px;
+}
+  
+button.serviceCenter-delete {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+  
+button.serviceCenter-edit:hover {
+    background-color: #2980b9;
+}
+  
+button.serviceCenter-delete:hover {
+    background-color: #c0392b;
+}
+
+/* Nút thêm */
+.serviceCenter-floating-btn {
+    background-color: #3498db; 
+    color: #fff; 
+    border: none;
+    padding: 15px; 
+    font-size: 30px; 
+    border-radius: 50%; 
+    cursor: pointer;
+    position: fixed;
+    bottom: 30px; 
+    right: 30px; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+    transition: background-color 0.3s; 
+    width: 60px; 
+    height: 60px; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+}
+
+.serviceCenter-floating-btn:hover {
+    background-color: #2980b9; 
+}
+
+
+

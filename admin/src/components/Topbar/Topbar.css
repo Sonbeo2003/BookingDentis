@@ -1,0 +1,59 @@
+.topbar {
+    position: fixed;
+    top: 10;
+    left: 250px !important; 
+    width: calc(100% - 250px) !important;
+    background-color: #ffffff !important;
+    z-index: 1100;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+    height: 64px;
+    /* display: flex; */
+    /* justify-content: space-between !important; */
+    /* align-items: center; */
+    padding: 0 20px; 
+  }
+  .topbar-toolbar {
+    display: flex;
+    justify-content: space-between; 
+    align-items: center; 
+  }
+  .topbar-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #020202;
+    text-transform: uppercase;
+    flex-grow: 1;
+  }
+  .menu-icon {
+    margin-right: 10px; 
+    color: #000000;
+  }
+  .topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  .user-name {
+    margin-right: 0px; 
+    font-weight: bold;
+    color: black;
+  }
+  
+  .topbar-actions .icon {
+    color: #000000;
+    cursor: pointer;
+    transition: color 0.3s ease;
+  }
+  
+  .topbar-actions .icon:hover {
+    color: #e66814;
+  }
+  
+  /* Khi màn hình nhỏ hơn 768px, thay đổi cách bố trí */
+  @media (max-width: 768px) {
+    .topbar {
+      left: 0; /* TopBar sẽ chiếm toàn bộ chiều rộng */
+      width: 100%;
+    }
+  }
+  

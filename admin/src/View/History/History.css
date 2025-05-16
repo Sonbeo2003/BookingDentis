@@ -1,0 +1,120 @@
+.treatment-content-section {
+    min-height: 100vh;
+    margin-top: 80px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  th, td {
+    border: 1px solid #ddd;
+    padding: 14px;
+    text-align: center;
+  }
+  
+  th {
+    background-color: #34495e;
+    color: #ecf0f1;
+    font-weight: normal;
+    font-size: 18px;
+  }
+  
+  .treatment-content-section .treatment-table .custom-edit-button {
+    background-color: #4FC3F7 !important;
+    color: white !important;
+    border: none !important;
+    padding: 8px !important;
+    cursor: pointer !important;
+    border-radius: 8px !important;
+    font-size: 14px !important;
+    width: 60px !important;
+    height: 60px !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    margin: 0 auto 5px !important;
+    transition: background-color 0.3s !important;
+  }
+  
+  .treatment-content-section .treatment-table .custom-delete-button {
+    background-color: #EF5350 !important;
+    color: white !important;
+    border: none !important;
+    padding: 8px !important;
+    cursor: pointer !important;
+    border-radius: 8px !important;
+    font-size: 14px !important;
+    width: 60px !important;
+    height: 60px !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    margin: 0 auto !important;
+    transition: background-color 0.3s !important;
+  }
+  
+  .treatment-content-section .treatment-table .custom-edit-button:hover {
+    background-color: #29B6F6 !important;
+  }
+  
+  .treatment-content-section .treatment-table .custom-delete-button:hover {
+    background-color: #E53935 !important;
+  }
+  
+  .treatment-floating-btn {
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    padding: 15px;
+    font-size: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .treatment-floating-btn:hover {
+    background-color: #2980b9;
+  }
+  
+  .treatment-search-container {
+    position: relative;
+    width: 500px;
+    margin-bottom: 20px;
+  }
+  
+  .treatment-search-icon {
+    position: absolute;
+    top: 40%;
+    right: 10px;
+    transform: translateY(-50%);
+    color: #7f8c8d;
+    font-size: 18px;
+  }
+  
+  .treatment-search-input {
+    width: 100%;
+    padding: 10px 40px 10px 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 18px;
+    transition: border-color 0.3s ease;
+  }
+  
+  .treatment-search-input:focus {
+    border-color: #3498db;
+    outline: none;
+  }

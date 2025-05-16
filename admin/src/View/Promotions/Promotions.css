@@ -1,0 +1,101 @@
+.promotions-content-section {
+    min-height: 100vh;
+    margin-top: 80px;
+    box-sizing: border-box; 
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .promotions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+  }
+  
+
+  .promotions-edit {
+    background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 10px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  border-radius: 4px;
+  margin-right: 5px;
+  transition: background-color 0.3s;
+  }
+  
+  .promotions-delete {
+    background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+  }
+  
+  .edit-btn:hover, .delete-btn:hover {
+    opacity: 0.8;
+  }
+  .promotions-floating-btn{
+    background-color: #3498db;
+  color: #fff;
+  border: none;
+  padding: 15px;
+  font-size: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  }
+  .promotions-floating-btn:hover{
+    background-color: #2980b9;
+  }
+  .promotions-header-section {
+    display: flex;
+    justify-content: center;  
+    align-items: center;
+    margin-bottom: 20px;
+    position: relative;
+  }
+  
+  
+  /* CSS cho thanh tìm kiếm */
+  .promotions-search-container {
+    position: relative;
+    width: 500px;
+    margin-bottom: 20px;
+  }
+  
+  .promotions-search-icon {
+    position: absolute;
+    top: 40%;
+    right: 10px; 
+    transform: translateY(-50%);
+    color: #7f8c8d;
+    font-size: 18px;
+  }
+  
+  .promotions-search-input {
+    width: 100%;
+    padding: 10px 40px 10px 10px; /* Thêm khoảng trống bên phải cho icon */
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 18px;
+    transition: border-color 0.3s ease;
+  }
+  
+  .promotions-search-input:focus {
+    border-color: #3498db;
+    outline: none;
+  }
+  

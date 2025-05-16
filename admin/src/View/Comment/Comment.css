@@ -1,0 +1,75 @@
+.comments-content-section {
+  max-width: 1000px;
+  margin: 10px auto; /* Giảm margin để bớt lùi xuống */
+  padding: 15px; /* Giảm padding */
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* Bóng nhẹ để tăng thẩm mỹ */
+}
+
+.comments-search-container {
+  margin-bottom: 15px; /* Giảm khoảng cách dưới */
+}
+
+.comments-search-input {
+  width: 100%;
+  padding: 8px 12px; /* Giảm padding cho gọn */
+  border: 1px solid #e0e0e0; /* Viền nhẹ */
+  border-radius: 6px;
+  font-size: 15px;
+  background-color: #fafafa; /* Nền sáng hơn */
+  transition: border-color 0.3s ease;
+}
+
+.comments-search-input:focus {
+  outline: none;
+  border-color: #007bff; /* Màu viền khi focus */
+  background-color: #fff;
+}
+
+.comments-table {
+  width: 100%;
+}
+
+.comments-table table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.comments-table th,
+.comments-table td {
+  padding: 10px 12px; /* Giảm padding cho gọn */
+  text-align: left;
+  border-bottom: 1px solid #f0f0f0; /* Viền nhẹ hơn */
+}
+
+.comments-table th {
+  background-color: #007bff; /* Màu xanh dương hiện đại */
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.comments-table td {
+  font-size: 14px;
+  color: #333;
+}
+
+.comments-table tr {
+  transition: background-color 0.2s ease; /* Hiệu ứng hover mượt */
+}
+
+.comments-table tr:hover {
+  background-color: #f8f9fa; /* Nền hover nhẹ */
+}
+
+/* Thông báo khi không có bình luận */
+.comments-table p {
+  text-align: center;
+  color: #666;
+  font-size: 16px;
+  padding: 20px 0;
+}

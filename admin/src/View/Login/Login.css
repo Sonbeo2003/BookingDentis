@@ -1,0 +1,233 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+body {
+  background: linear-gradient(135deg, #3498db 0%, #9b59b6 100%);
+}
+
+.login-page {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  background: linear-gradient(135deg, #3498db 0%, #9b59b6 100%);
+}
+
+.login-container {
+  width: 100%;
+  max-width: 1000px;
+}
+
+.login-card {
+  background-color: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+.image-side {
+  flex: 1;
+  background: linear-gradient(135deg, #0066ff 0%, #00aaff 100%);
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  min-height: 500px;
+  background-image: url('../../assets/images/seo-nha-khoa-scaled.jpg');
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  -ms-interpolation-mode: nearest-neighbor;
+}
+
+.form-side {
+  flex: 1;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+}
+
+h2 {
+  font-size: 24px;
+  margin-bottom: 30px;
+  color: #333;
+  text-align: center;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group:first-child {
+  margin-bottom: 0;
+}
+
+.input-with-icon {
+  position: relative;
+  border: 1px solid #e1e1e1;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.input-icon {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #999;
+}
+
+input {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  outline: none;
+  font-size: 14px;
+}
+
+.password-input-container {
+  position: relative;
+}
+
+.password-input-container input {
+  padding-right: 40px;
+}
+
+.eye-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #666;
+  font-size: 18px;
+}
+
+.form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.remember-me {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  flex-wrap: nowrap;
+}
+
+.remember-me input[type="checkbox"] {
+  width: auto;
+  padding: 0;
+  margin-right: 5px;
+}
+
+.remember-me label {
+  font-size: 14px;
+  color: #666;
+  display: inline-block;
+}
+
+.login-button {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(90deg, #3498db 0%, #9b59b6 100%);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-bottom: 15px;
+}
+
+.forgot-password-link {
+  text-align: right;
+  margin-bottom: 25px;
+}
+
+.forgot-password-link a {
+  color: #0066ff;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.alternative-login {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.alternative-login p {
+  position: relative;
+  color: #999;
+  font-size: 14px;
+  margin-bottom: 15px;
+}
+
+.alternative-login p::before,
+.alternative-login p::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 35%;
+  height: 1px;
+  background-color: #e1e1e1;
+}
+
+.alternative-login p::before {
+  left: 0;
+}
+
+.alternative-login p::after {
+  right: 0;
+}
+
+.social-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.social-buttons button {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.facebook-btn {
+  background-color: #3b5998;
+}
+
+.google-btn {
+  background-color: #db4437;
+}
+
+.twitter-btn {
+  background-color: #1da1f2;
+}
+
+@media (max-width: 768px) {
+  .login-card {
+    flex-direction: column;
+  }
+  
+  .image-side {
+    min-height: 200px;
+  }
+  
+  .form-side {
+    padding: 30px 20px;
+  }
+}

@@ -1,0 +1,22 @@
+/* CSS cho thanh chọn vai trò */
+select[name="vaitro"] {
+    width: 100%; /* Chiều rộng đầy đủ */
+    height: 40px; /* Chiều cao lớn hơn */
+    font-size: 16px; /* Kích thước chữ lớn hơn */
+    padding: 5px; /* Khoảng cách bên trong */
+    border: 1px solid #ccc; /* Đường viền */
+    border-radius: 5px; /* Bo góc */
+    outline: none; /* Bỏ đường viền khi chọn */
+    transition: border-color 0.3s; /* Hiệu ứng chuyển tiếp cho đường viền */
+  }
+  
+  /* Thay đổi đường viền khi hover */
+  select[name="vaitro"]:hover {
+    border-color: #007bff; /* Đổi màu đường viền khi hover */
+  }
+  
+  /* Thay đổi đường viền khi được chọn */
+  select[name="vaitro"]:focus {
+    border-color: #007bff; /* Đổi màu đường viền khi chọn */
+  }
+  
