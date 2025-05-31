@@ -10,7 +10,7 @@ import {
 import axios from "axios";
 import url from "../../../ipconfig";
 
-const BASE_IMAGE_URL = "http://192.168.1.9/api_doctor/"; // Base URL cho ảnh
+const BASE_IMAGE_URL = "http://172.20.10.3/api_doctor/"; // Base URL cho ảnh
 
 const ServicesListScreen = ({ navigation }) => {
   const [services, setServices] = useState([]);

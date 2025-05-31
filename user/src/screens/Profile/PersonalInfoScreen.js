@@ -21,26 +21,26 @@ const PersonalInfoScreen = ({ navigation }) => {
     const fetchUserData = async () => {
       try {
         const userString = await AsyncStorage.getItem("user");
-        let idnguoidung;
+        let user_id;
 
         if (userString) {
           const userObject = JSON.parse(userString); 
           console.log("Fetched user object:", userObject);
-          idnguoidung = userObject.idnguoidung; 
+          user_id = userObject.user_id; // Lấy user_id từ đối tượng người dùng
         } else {
-          idnguoidung = await AsyncStorage.getItem("idnguoidung");
+          user_id = await AsyncStorage.getItem("idnguoidung");
         }
 
-        console.log("ID Người Dùng:", idnguoidung);
+        console.log("ID Người Dùng:", user_id);
 
-        if (!idnguoidung) {
-          console.error("Không tìm thấy idnguoidung trong AsyncStorage");
+        if (!user_id) {
+          console.error("Không tìm thấy user_id trong AsyncStorage");
           return;
         }
 
         // Gửi yêu cầu API để lấy thông tin người dùng
         const response = await axios.get(
-          `${url}API_Events/Account_User/getnguoidungbyid.php?idnguoidung=${idnguoidung}`
+          `${url}api_doctor/Account_User/getnguoidungbyid.php?user_id=${user_id}`
         );
 
         if (response.data) {
@@ -54,48 +54,47 @@ const PersonalInfoScreen = ({ navigation }) => {
     fetchUserData(); // Gọi hàm lấy dữ liệu
   }, []);
 
-  const handleSave = async () => {
-    try {
-      const userString = await AsyncStorage.getItem("user");
-      let idnguoidung;
+ const handleSave = async () => {
+  try {
+    const userString = await AsyncStorage.getItem("user");
+    let user_id;
 
-      if (userString) {
-        const userObject = JSON.parse(userString);
-        idnguoidung = userObject.idnguoidung;
-      } else {
-        idnguoidung = await AsyncStorage.getItem("idnguoidung");
-      }
-
-      if (!idnguoidung) {
-        console.error("Không tìm thấy idnguoidung trong AsyncStorage");
-        return;
-      }
-
-      // Tạo đối tượng dữ liệu người dùng để gửi
-      const updatedUser = {
-        idnguoidung,
-        tennguoidung: user.tennguoidung,
-        email: user.email,
-        sodienthoai: user.sodienthoai,
-        diachi: user.diachi,
-      };
-
-      // Gửi yêu cầu PUT để cập nhật thông tin người dùng
-      const response = await axios.put(
-        `${url}API_Events/Account_User/suanguoidungbyid.php`,
-        updatedUser
-      );
-
-      if (response.data) {
-        setUser(response.data); 
-        setIsEditing(false);
-        navigation.goBack();
-       
-      }
-    } catch (error) {
-      console.error("Lỗi khi lưu thông tin người dùng:", error);
+    if (userString) {
+      const userObject = JSON.parse(userString);
+      user_id = userObject.user_id;
+    } else {
+      user_id = await AsyncStorage.getItem("user_id");
     }
-  };
+
+    if (!user_id) {
+      console.error("Không tìm thấy user_id trong AsyncStorage");
+      return;
+    }
+
+    const updatedUser = {
+      user_id,
+      full_name: user.full_name,
+      email: user.email,
+      phone_number: user.phone_number,
+      address: user.address,
+    };
+
+    const response = await axios.put(
+      `${url}api_doctor/Account_User/suanguoidungbyid.php`,
+      updatedUser
+    );
+
+    if (response.data?.status === "success") {
+      setUser(response.data.user); // cập nhật lại state từ server
+      setIsEditing(false);
+      navigation.goBack();
+    } else {
+      console.error("Cập nhật thất bại:", response.data?.message);
+    }
+  } catch (error) {
+    console.error("Lỗi khi lưu thông tin người dùng:", error);
+  }
+};
 
   const handleCancel = () => {
     setIsEditing(false); // Hủy thay đổi và quay lại chế độ không chỉnh sửa
@@ -133,7 +132,7 @@ const PersonalInfoScreen = ({ navigation }) => {
       {/* Thông tin người dùng */}
       <TextInput
         style={styles.input}
-        value={user.tennguoidung}
+        value={user.full_name}
         editable={isEditing}
         onChangeText={(text) => setUser({ ...user, tennguoidung: text })}
         placeholder="Tên"
@@ -147,16 +146,16 @@ const PersonalInfoScreen = ({ navigation }) => {
       />
       <TextInput
         style={styles.input}
-        value={user.sodienthoai}
+        value={user.phone_number}
         editable={isEditing}
-        onChangeText={(text) => setUser({ ...user, sodienthoai: text })}
+        onChangeText={(text) => setUser({ ...user, phone_number: text })}
         placeholder="Số điện thoại"
       />
       <TextInput
         style={styles.input}
-        value={user.diachi}
+        value={user.address}
         editable={isEditing}
-        onChangeText={(text) => setUser({ ...user, diachi: text })}
+        onChangeText={(text) => setUser({ ...user, address: text })}
         placeholder="Địa chỉ"
       />
 

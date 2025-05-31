@@ -16,7 +16,7 @@ const LoginScreen = ({ navigation }) => {
     }
     
     try {
-      const response = await fetch(`${url}api_doctor/dangnhap.php`, {
+      const response = await fetch(`${url}/api_doctor/dangnhap.php`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',

@@ -8,16 +8,14 @@ import { Tabs, Tab } from "@mui/material";
 const Bookings = () => {
   const [bookings, setBookings] = useState([]);
   const [value, setValue] = useState(0);
-
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
   const [bookingIdToCancel, setBookingIdToCancel] = useState(null);
-
   const [startDate, setStartDate] = useState(""); // Ngày bắt đầu
   const [endDate, setEndDate] = useState(""); // Ngày kết thúc
 
- // Lọc lịch hẹn theo tab
-  const filteredbookings = bookings.filter((booking) => {
+  // Lọc lịch hẹn theo tab
+  const filteredBookings = bookings.filter((booking) => {
     const trangThaiSo = parseInt(booking.appointment_status, 10); // Đảm bảo là số
     if (value === 0 && trangThaiSo === 0) return true; // Chưa xác nhận
     if (value === 1 && trangThaiSo === 1) return true; // Đang thực hiện
@@ -26,10 +24,14 @@ const Bookings = () => {
     if (value === 4 && trangThaiSo === 4) return true; // Đã hủy
     return false;
   });
-// Load danh sách đặt lịch
+
+  // Load danh sách đặt lịch
   const loadBookings = async () => {
     try {
-      const response = await fetch(`${url}/api_doctor/Lichhen_Admin/getlichhen.php`); // Sử dụng endpoint mới đã sửa
+      const response = await fetch(`${url}/api_doctor/Lichhen_Admin/getlichhen.php`);
+      if (!response.ok) {
+        throw new Error("Lỗi khi tải danh sách đặt lịch");
+      }
       const data = await response.json();
       if (Array.isArray(data)) {
         setBookings(data);
@@ -38,8 +40,8 @@ const Bookings = () => {
         toast.error("Không thể tải danh sách đặt lịch.");
       }
     } catch (error) {
-      console.error("Lỗi fetch lịch hẹn:", error);
-      toast.error("Lỗi kết nối đến server.");
+      console.error("Lỗi khi tải dữ liệu:", error);
+      toast.error("Không thể tải danh sách đặt lịch. Vui lòng thử lại.");
     }
   };
 
@@ -84,7 +86,7 @@ const Bookings = () => {
     }
   };
 
-  // Xác nhận đặt lịch
+  // Xác nhận đặt lịch và chuyển sang trạng thái "Đang thực hiện"
   const confirmBooking = async (idlichhen) => {
     try {
       const response = await fetch(
@@ -94,7 +96,7 @@ const Bookings = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ idlichhen }),
+          body: JSON.stringify({ appointment_id: idlichhen }),
         }
       );
 
@@ -102,8 +104,13 @@ const Bookings = () => {
         throw new Error("Lỗi khi xác nhận lịch hẹn");
       }
 
+      // Sau khi xác nhận thành công, tải lại dữ liệu mới
       loadBookings();
-      toast.success("Lịch hẹn đã được xác nhận!");
+      
+      // Sau khi xác nhận, chuyển sang tab "Đang thực hiện"
+      setValue(1); // Chuyển sang tab Đang thực hiện
+      
+      toast.success("Lịch hẹn đã được xác nhận và chuyển sang đang thực hiện!");
     } catch (error) {
       console.error("Lỗi khi xác nhận:", error);
       toast.error("Không thể xác nhận lịch hẹn. Vui lòng thử lại.");
@@ -120,15 +127,34 @@ const Bookings = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ idlichhen }),
+          body: JSON.stringify({ appointment_id: idlichhen }),
         }
       );
 
       if (!response.ok) {
         throw new Error("Lỗi khi hoàn thành lịch hẹn");
       }
-      loadBookings();
-      toast.success("Lịch hẹn đã được hoàn thành");
+      
+      const data = await response.json(); // Nhận kết quả JSON từ API
+      
+      if (data.booking) {
+        // Cập nhật booking trong state nếu API trả về chi tiết booking
+        setBookings(prevBookings => {
+          return prevBookings.map(booking => {
+            if (booking.appointment_id === idlichhen) {
+              return { ...booking, appointment_status: "2" };
+            }
+            return booking;
+          });
+        });
+      } else {
+        // Nếu API không trả về chi tiết booking, chỉ tải lại toàn bộ dữ liệu
+        await loadBookings();
+      }
+      
+      // Sau khi hoàn thành, chuyển sang tab "Hoàn thành"
+      setValue(2);
+      toast.success(data.message || "Lịch hẹn đã được hoàn thành");
     } catch (error) {
       console.error("Lỗi khi hoàn thành:", error);
       toast.error("Không thể hoàn thành lịch hẹn. Vui lòng thử lại.");
@@ -153,6 +179,8 @@ const Bookings = () => {
         throw new Error("Lỗi khi xác nhận thanh toán");
       }
       loadBookings();
+      // Sau khi thanh toán, chuyển sang tab "Đã thanh toán"
+      setValue(3);
       toast.success("Lịch hẹn đã được thanh toán");
     } catch (error) {
       console.error("Lỗi khi thanh toán:", error);
@@ -179,6 +207,8 @@ const Bookings = () => {
       }
       loadBookings();
       closeCancelModal();
+      // Sau khi hủy, chuyển sang tab "Đã hủy"
+      setValue(4);
       toast.success("Lịch hẹn đã được hủy");
     } catch (error) {
       console.error("Lỗi khi hủy lịch hẹn:", error);
@@ -201,22 +231,6 @@ const Bookings = () => {
     loadBookings();
   }, []);
 
-  // useEffect(() => {
-  //   console.log("Start date:", startDate);
-  //   console.log("End date:", endDate);
-  //   console.log("Bookings:", bookings);
-  //   console.log("Filtered bookings:", filteredbookings);
-  // }, [startDate, endDate, bookings, filteredbookings]);
-
-  // useEffect(() => {
-  //   if (startDate && endDate) {
-  //     filterByDate(startDate, endDate);
-  //   } else {
-  //     loadBookings();
-  //   }
-  // }, [startDate, endDate]);
-
-  // const { confirm, cancel } = btnStatus(value);
   const convertTrangThai = (trangThai) => {
     const trangThaiMap = {
       0: "Chờ xác nhận",
@@ -227,6 +241,7 @@ const Bookings = () => {
     };
     return trangThaiMap[trangThai] || "Không xác định";
   };
+  
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -237,7 +252,29 @@ const Bookings = () => {
 
       <div style={{ display: "flex", alignItems: "center" }}>
         <div className="date-filter-container">
-          {/* ... (input chọn ngày giữ nguyên) */}
+          <label>Từ ngày:</label>
+          <input
+            type="date"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+            className="date-input"
+          />
+          <label>Đến ngày:</label>
+          <input
+            type="date"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+            className="date-input"
+          />
+          <button
+            onClick={() => filterByDate(startDate, endDate)}
+            className="search-button"
+          >
+            Tìm kiếm
+          </button>
+          <button onClick={() => loadBookings()} className="reload-button">
+            Tải lại
+          </button>
         </div>
       </div>
 
@@ -248,11 +285,15 @@ const Bookings = () => {
         onChange={handleChange}
         aria-label="Appointment Status Tabs"
       >
-        {/* ... (các Tab giữ nguyên) */}
+        <Tab className="status-tab" label="Chưa xác nhận" />
+        <Tab className="status-tab" label="Đang thực hiện" />
+        <Tab className="status-tab" label="Hoàn thành" />
+        <Tab className="status-tab" label="Đã thanh toán" />
+        <Tab className="status-tab" label="Đã hủy" />
       </Tabs>
 
       <div id="bookingsTable">
-        {filteredbookings.length > 0 ? (
+        {filteredBookings.length > 0 ? (
           <table className="booking-table">
             <thead>
               <tr>
@@ -263,31 +304,35 @@ const Bookings = () => {
                 <th>Tên Dịch Vụ</th>
                 <th>Ngày Hẹn</th>
                 <th>Thời Gian Hẹn</th>
-                <th>Ngày Tạo</th>
                 <th>Trạng Thái</th>
                 <th>Ghi Chú</th>
-                {/* Thêm cột trạng thái người dùng nếu có */}
-                {/* <th>Trạng Thái Người Dùng</th> */}
+                <th>Giá Dịch Vụ</th>
+                <th>Khuyến Mãi</th>
+                <th>Tiền Đặt Cọc</th>
+                <th>Giảm Giá</th>
+                <th>Giá Sau Giảm</th>
                 <th>Chức Năng</th>
               </tr>
             </thead>
             <tbody>
-              {filteredbookings.map((booking) => (
-                <tr key={booking.appointment_id}> {/* Sử dụng appointment_id */}
+              {filteredBookings.map((booking) => (
+                <tr key={booking.appointment_id}>
                   <td>{booking.appointment_id}</td>
-                  <td>{booking.user_id}</td> {/* Hiển thị ID người dùng */}
+                  <td>{booking.user_id}</td>
                   <td>{booking.doctor_name}</td>
                   <td>{booking.clinic_name}</td>
                   <td>{booking.services}</td>
                   <td>{booking.appointment_date}</td>
                   <td>{booking.appointment_time}</td>
-                  <td>{booking.ngaytao}</td> {/* Cần xem lại tên cột này trong dữ liệu trả về */}
-                  <td>{convertTrangThai(booking.appointment_status)}</td> {/* Sử dụng appointment_status */}
+                  <td>{convertTrangThai(booking.appointment_status)}</td>
                   <td>{booking.note}</td>
-                  {/* Hiển thị trạng thái người dùng nếu có */}
-                  {/* <td>{booking.user_status}</td> */}
+                  <td>{booking.total_price ? `${booking.total_price} đ` : "Chưa xác định"}</td>
+                  <td>{booking.promotion_code ? booking.promotion_code : "Không áp dụng"}</td>
+                  <td>{booking.deposit_amount ? `${booking.deposit_amount} đ` : "Không có"}</td>
+                  <td>{booking.discount_value || "Không có"}</td>
+                  <td>{booking.final_price ? `${booking.final_price} đ` : "Chưa xác định"}</td>
                   <td>
-                    {booking.appointment_status === "0" ? ( // Kiểm tra appointment_status
+                    {booking.appointment_status === "0" ? (
                       <div className="booking-actions">
                         <button
                           onClick={() => confirmBooking(booking.appointment_id)}

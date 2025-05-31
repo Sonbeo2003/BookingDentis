@@ -12,7 +12,7 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import MapView, { Marker } from "react-native-maps";
 import url from "../../../ipconfig";
 
-const BASE_IMAGE_URL = "http://192.168.1.9/api_doctor/"; // Base URL cho ảnh
+const BASE_IMAGE_URL = "http://172.20.10.3/api_doctor/"; // Base URL cho ảnh
 
 const CenterDetails = ({ navigation }) => {
   const [centers, setCenters] = useState([]);

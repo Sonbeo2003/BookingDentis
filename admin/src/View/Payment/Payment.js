@@ -13,29 +13,6 @@ const Payment = () => {
   const [endDate, setEndDate] = useState("");
 
   // Dữ liệu mẫu
-  const samplePayments = [
-    {
-      idthanhtoan: 1,
-      idlichhen: 101,
-      phuongthuc: "Thẻ tín dụng",
-      ngaythanhtoan: "2025-05-01",
-      tongtien: 500000,
-    },
-    {
-      idthanhtoan: 2,
-      idlichhen: 102,
-      phuongthuc: "Tiền mặt",
-      ngaythanhtoan: "2025-05-02",
-      tongtien: 750000,
-    },
-    {
-      idthanhtoan: 3,
-      idlichhen: 103,
-      phuongthuc: "Chuyển khoản",
-      ngaythanhtoan: "2025-05-03",
-      tongtien: 1000000,
-    },
-  ];
 
   const debounceKeyword = useDebounce(searchTerm, 500);
 
@@ -48,9 +25,16 @@ const Payment = () => {
       //   throw new Error("Lỗi khi tải dữ liệu thanh toán");
       // }
       // const data = await response.json();
-      const data = samplePayments; // Sử dụng dữ liệu mẫu
-      setPayments(data);
-      setFilteredPayments(data);
+      // const data = samplePayments;
+const response = await fetch(`${url}/api_doctor/Thanhtoan_Admin/getthanhtoan.php`);
+if (!response.ok) {
+  throw new Error("Lỗi khi tải dữ liệu thanh toán");
+}
+const data = await response.json();
+setPayments(data);
+setFilteredPayments(data);
+
+
     } catch (error) {
       console.error("Lỗi khi tải dữ liệu:", error);
       toast.error("Không thể tải danh sách thanh toán. Vui lòng thử lại.");
@@ -150,7 +134,7 @@ const Payment = () => {
             </thead>
             <tbody>
               {filteredPayments.map((payment) => (
-                <tr key={payment.idthanhtoan}>
+                <tr key={payment.appointment_id}>
                   <td>{payment.idthanhtoan}</td>
                   <td>{payment.idlichhen}</td>
                   <td>{payment.phuongthuc}</td>

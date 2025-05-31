@@ -1,75 +1,90 @@
-.comments-content-section {
-  max-width: 1000px;
-  margin: 10px auto; /* Giảm margin để bớt lùi xuống */
-  padding: 15px; /* Giảm padding */
+.comment-section {
+  max-width: 800px;
+  margin: 30px auto;
+  padding: 20px;
   background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+}
+
+.comment-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.comment-search-icon {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #aaa;
+}
+
+.comment-search {
+  width: 100%;
+  padding: 10px 15px 10px 40px;
+  font-size: 16px;
   border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* Bóng nhẹ để tăng thẩm mỹ */
+  border: 1px solid #ccc;
+  background-color: #fafafa;
+  transition: all 0.3s ease;
 }
 
-.comments-search-container {
-  margin-bottom: 15px; /* Giảm khoảng cách dưới */
-}
-
-.comments-search-input {
-  width: 100%;
-  padding: 8px 12px; /* Giảm padding cho gọn */
-  border: 1px solid #e0e0e0; /* Viền nhẹ */
-  border-radius: 6px;
-  font-size: 15px;
-  background-color: #fafafa; /* Nền sáng hơn */
-  transition: border-color 0.3s ease;
-}
-
-.comments-search-input:focus {
+.comment-search:focus {
   outline: none;
-  border-color: #007bff; /* Màu viền khi focus */
+  border-color: #007bff;
   background-color: #fff;
 }
 
-.comments-table {
-  width: 100%;
+.comment-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
-.comments-table table {
-  width: 100%;
-  border-collapse: collapse;
-  background-color: #fff;
-  border-radius: 8px;
-  overflow: hidden;
+.comment-card {
+  padding: 16px;
+  border: 1px solid #f1f1f1;
+  border-radius: 12px;
+  background-color: #fdfdfd;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+  transition: box-shadow 0.3s ease;
 }
 
-.comments-table th,
-.comments-table td {
-  padding: 10px 12px; /* Giảm padding cho gọn */
-  text-align: left;
-  border-bottom: 1px solid #f0f0f0; /* Viền nhẹ hơn */
+.comment-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-.comments-table th {
-  background-color: #007bff; /* Màu xanh dương hiện đại */
-  color: #fff;
+.comment-user {
   font-weight: 600;
-  font-size: 14px;
-}
-
-.comments-table td {
-  font-size: 14px;
+  font-size: 16px;
   color: #333;
 }
 
-.comments-table tr {
-  transition: background-color 0.2s ease; /* Hiệu ứng hover mượt */
+.comment-content {
+  margin: 8px 0;
+  font-size: 15px;
+  color: #555;
 }
 
-.comments-table tr:hover {
-  background-color: #f8f9fa; /* Nền hover nhẹ */
+.comment-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #888;
 }
 
-/* Thông báo khi không có bình luận */
-.comments-table p {
+.comment-rating .star {
+  color: #ffc107;
+  margin-left: 3px;
+  font-size: 14px;
+}
+
+.comment-empty {
   text-align: center;
-  color: #666;
-  font-size: 16px;
+  color: #999;
+  font-style: italic;
   padding: 20px 0;
 }

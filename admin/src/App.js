@@ -106,12 +106,7 @@ function App() {
       icon: <RestoreIcon />,
       link: "/history",
     },
-    {
-      title: "Quản lý bình luận - đánh giá",
-      text: "Bình luận - Đánh giá",
-      icon: <NotificationsActiveIcon />,
-      link: "/comments",
-    },
+   
     {
       title: "Thông tin tài khoản",
       text: "Thông tin tài khoản",

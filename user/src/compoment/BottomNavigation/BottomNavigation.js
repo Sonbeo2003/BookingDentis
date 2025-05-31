@@ -17,6 +17,7 @@ import TreatmentHistoryScreen from "../../screens/History/TreatmentHistoryScreen
 import TreatmentDetail from "../../screens/History/TreatmentDetail";
 import DoctorScreen from "../../screens/Doctor/DoctorScreen";
 import PromotionScreen from "../../screens/Voucher/PromotionScreen";
+import ProfileSDentailcreen from "../../screens/Medicalrecords/ProfileSDentailcreen";
 
 // import PetDetail from "../../screens/Pet/PetDetail";
 import ServiceDetails from "../../screens/Service/ServiceDetails";
@@ -137,6 +138,11 @@ const Rootnavi = () => {
           name="Booking"
           component={BookingScreen}
           options={{ title: "Đặt lịch dịch vụ" }}
+        />
+        <Stack.Screen
+          name="ProfileSDentailcreen"
+          component={ProfileSDentailcreen}
+          options={{ title: "Hồ sơ khám bệnh" }}
         />
         {/* <Stack.Screen
           name="PetScreen"

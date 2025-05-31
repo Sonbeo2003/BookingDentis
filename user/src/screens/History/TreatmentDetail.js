@@ -4,39 +4,124 @@ import {
   Text,
   StyleSheet,
   Image,
-  ScrollView,
   TextInput,
   TouchableOpacity,
-  FlatList, // Thêm FlatList vào đây
+  FlatList,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
-
+import url from "../../../ipconfig";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 const TreatmentDetail = ({ route }) => {
-  const { treatment } = route.params;
-  const [comment, setComment] = useState("");
-  const [reviews, setReviews] = useState([
-    // Dữ liệu đánh giá mẫu
-    { id: 1, user: "Nguyen Van A", rating: 4, comment: "Dịch vụ tốt, bác sĩ nhiệt tình!" },
-    { id: 2, user: "Tran Thi B", rating: 5, comment: "Rất hài lòng với kết quả!" },
-  ]);
+  const { treatment, user_id, appointment_id, doctor_id } = route.params;
 
-  const handleAddComment = () => {
-    if (comment.trim()) {
-      setReviews([...reviews, { id: reviews.length + 1, user: "Current User", rating: 5, comment }]);
-      setComment("");
+  const [comment, setComment] = useState("");
+  const [rating, setRating] = useState(0);
+  const [reviews, setReviews] = useState([]);
+
+  const getUserId = async () => {
+    try {
+      const userData = await AsyncStorage.getItem("user");
+      console.log("Raw user data from AsyncStorage:", userData);
+
+      if (!userData) {
+        console.error("Không tìm thấy dữ liệu người dùng trong AsyncStorage");
+        return null;
+      }
+
+      try {
+        const parsedUser = JSON.parse(userData);
+        console.log("Parsed user data:", parsedUser);
+
+        if (parsedUser && parsedUser.user_id) {
+          console.log("User ID retrieved:", parsedUser.user_id);
+          return parsedUser.user_id;
+        } else {
+          console.error("Không tìm thấy user_id trong dữ liệu người dùng");
+          return null;
+        }
+      } catch (parseError) {
+        console.error("Lỗi khi phân tích dữ liệu JSON:", parseError);
+        return null;
+      }
+    } catch (error) {
+      console.error("Lỗi khi truy cập AsyncStorage:", error);
+      return null;
+    }
+  };
+
+  const handleAddComment = async () => {
+    if (comment.trim() === "" || rating === 0) return;
+
+    try {
+      const actualUserId = await getUserId(); // Đổi tên để tránh đè lên biến từ route.params
+      if (!actualUserId) {
+        alert("Không tìm thấy thông tin người dùng.");
+        return;
+      }
+      console.log("Đang gọi API đến:", `${url}/api_doctor/review_app.php`);
+      const resp = await fetch(`${url}/api_doctor/review_app.php`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          appointment_id,
+          user_id,
+          doctor_id,
+          rating,
+          comment,
+        }),
+      });
+
+      if (!resp.ok) {
+        const errorText = await resp.text();
+        console.error("Server lỗi:", errorText);
+        alert(errorText);
+        return;
+      }
+
+      // in ra code status để debug
+      console.log("HTTP status:", resp.status);
+      const data = await resp.json();
+      console.log("Response body:", data);
+
+      if (data.success) {
+        setReviews((prev) => [
+          ...prev,
+          { id: prev.length + 1, user: "Bạn", rating, comment },
+        ]);
+        setComment("");
+        setRating(0);
+        alert("Đánh giá thành công!");
+      } else {
+        alert(data.message);
+      }
+    } catch (err) {
+      console.error("Error sending review:", err);
+      alert("Lỗi khi gửi đánh giá.");
     }
   };
 
   const renderReview = ({ item }) => (
     <View style={styles.reviewItem}>
       <Text style={styles.reviewUser}>{item.user}</Text>
-      <Text style={styles.reviewRating}>Đánh giá: {item.rating}/5</Text>
+      <Text style={styles.reviewRating}>
+        Đánh giá: {item.rating}/5{" "}
+        {[...Array(5)].map((_, i) => (
+          <Icon
+            key={i}
+            name={i < item.rating ? "star" : "star-o"}
+            size={16}
+            color="#fbbf24"
+          />
+        ))}
+      </Text>
       <Text style={styles.reviewComment}>{item.comment}</Text>
     </View>
   );
 
-  return (
-    <ScrollView style={styles.container}>
+  const renderHeader = () => (
+    <View>
       <Text style={styles.title}>Chi tiết điều trị</Text>
       <Text style={styles.detailText}>Ngày: {treatment.treatment_date}</Text>
       <Text style={styles.detailText}>
@@ -65,39 +150,66 @@ const TreatmentDetail = ({ route }) => {
           />
         )}
       </View>
+    </View>
+  );
 
-      {/* Phần đánh giá và bình luận */}
-      <Text style={styles.sectionTitle}>Đánh giá và Bình luận</Text>
+  const renderFooter = () => (
+    <View style={styles.commentSection}>
+      <Text style={{ fontWeight: "bold", marginBottom: 8 }}>
+        Đánh giá của bạn:
+      </Text>
+      <View style={{ flexDirection: "row", marginBottom: 10 }}>
+        {[1, 2, 3, 4, 5].map((star) => (
+          <TouchableOpacity key={star} onPress={() => setRating(star)}>
+            <Icon
+              name={star <= rating ? "star" : "star-o"}
+              size={30}
+              color="#fbbf24"
+            />
+          </TouchableOpacity>
+        ))}
+      </View>
+      <TextInput
+        style={styles.commentInput}
+        placeholder="Nhập bình luận của bạn..."
+        value={comment}
+        onChangeText={setComment}
+        multiline
+        textAlignVertical="top" // để con trỏ ở trên cùng
+        autoCorrect={false}
+      />
+      <TouchableOpacity style={styles.submitButton} onPress={handleAddComment}>
+        <Icon name="send" size={20} color="#fff" />
+        <Text style={styles.submitButtonText}>Gửi</Text>
+      </TouchableOpacity>
+    </View>
+  );
+
+  return (
+    // KeyboardAvoidingView giúp tránh view bị đẩy lên quá cao khi show keyboard
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={Platform.select({ ios: 0, android: 20 })}
+    >
       <FlatList
         data={reviews}
         renderItem={renderReview}
         keyExtractor={(item) => item.id.toString()}
-        ListEmptyComponent={<Text style={styles.noReviewText}>Chưa có đánh giá</Text>}
+        ListHeaderComponent={renderHeader}
+        ListFooterComponent={renderFooter}
+        contentContainerStyle={styles.container}
+        keyboardShouldPersistTaps="handled" // cho phép tap trong list mà không dismiss keyboard
+        keyboardDismissMode="on-drag"
       />
-
-      {/* Form thêm bình luận */}
-      <View style={styles.commentSection}>
-        <TextInput
-          style={styles.commentInput}
-          placeholder="Nhập bình luận của bạn..."
-          value={comment}
-          onChangeText={setComment}
-          multiline
-        />
-        <TouchableOpacity style={styles.submitButton} onPress={handleAddComment}>
-          <Icon name="send" size={20} color="#fff" />
-          <Text style={styles.submitButtonText}>Gửi</Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: "#f4f6f9",
     padding: 20,
+    backgroundColor: "#f4f6f9",
   },
   title: {
     fontSize: 24,
@@ -155,16 +267,15 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   commentSection: {
-    marginTop: 20,
+    marginTop: 120,
   },
   commentInput: {
-    height: 80,
+    height: 100, // cho nó cao hơn để dễ chạm
     borderColor: "#ccc",
     borderWidth: 1,
     borderRadius: 5,
     padding: 10,
     marginBottom: 10,
-    textAlignVertical: "top",
     backgroundColor: "#fff",
   },
   submitButton: {

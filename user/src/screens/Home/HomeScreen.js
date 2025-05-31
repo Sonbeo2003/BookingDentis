@@ -9,11 +9,14 @@ import {
   SafeAreaView,
   StatusBar,
   Dimensions,
+  TextInput,
 } from "react-native";
 import axios from "axios";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import url from "../../../ipconfig";
+import { db } from "../../../Firebase"; // Adjust the import path as necessary
+import { ref, push, onValue } from "firebase/database";
 
 // Keep the original image imports
 import imgService1 from "../../../assets/anh1.jpg";
@@ -33,6 +36,12 @@ const HomeScreen = ({ navigation }) => {
   const [currentMonth, setCurrentMonth] = useState("10/2022"); // For calendar display
   const [activeSlide, setActiveSlide] = useState(0);
   const scrollViewRef = useRef();
+  const [showMiniChat, setShowMiniChat] = useState(false);
+  const [chatMessages, setChatMessages] = useState([]);
+  const [newMessage, setNewMessage] = useState("");
+  const [notifications, setNotifications] = useState([]);
+  const [showNotifications, setShowNotifications] = useState(false);
+
 
   // Banner images for the slider
   const bannerImages = [
@@ -41,7 +50,7 @@ const HomeScreen = ({ navigation }) => {
     "https://img.freepik.com/premium-photo/beautiful-african-american-woman-with-bright-smile_1301-4251.jpg",
     "https://img.freepik.com/premium-photo/beautiful-girl-white-shirt-with-braces-teeth-blue-background_185193-8267.jpg",
     "https://img.freepik.com/premium-photo/dentist-patient-dental-clinic_85574-3069.jpg",
-    "https://img.freepik.com/premium-photo/dentist-explaining-dental-procedure-female-patient-showing-tooth-model_249974-14570.jpg"
+    "https://img.freepik.com/premium-photo/dentist-explaining-dental-procedure-female-patient-showing-tooth-model_249974-14570.jpg",
   ];
 
   // Keep the original image mapping
@@ -49,8 +58,42 @@ const HomeScreen = ({ navigation }) => {
     events1: imgService1,
     events2: imgService2,
     events3: imgService3,
-    events4: imgService4
+    events4: imgService4,
   };
+
+  useEffect(() => {
+    const chatRef = ref(db, "messages");
+    onValue(chatRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const messages = Object.entries(data)
+          .map(([key, value]) => ({
+            id: key,
+            ...value,
+          }))
+          .sort((a, b) => a.timestamp - b.timestamp);
+        setChatMessages(messages);
+      }
+    });
+  }, []);
+
+  const sendMessage = () => {
+    if (newMessage.trim()) {
+      const chatRef = ref(db, "messages");
+      push(chatRef, {
+        sender: "user",
+        text: newMessage,
+        timestamp: Date.now(),
+      });
+      setNewMessage("");
+    }
+  };
+
+  const handleDismissNotification = (appointment_id) => {
+  setNotifications((prev) =>
+    prev.filter((item) => item.appointment_id !== appointment_id)
+  );
+};
 
   // Auto sliding for banner
   useEffect(() => {
@@ -76,6 +119,41 @@ const HomeScreen = ({ navigation }) => {
       setActiveSlide(currentIndex);
     }
   };
+
+  useEffect(() => {
+  const checkUpcomingAppointment = async () => {
+    try {
+      const userString = await AsyncStorage.getItem("user");
+      if (!userString) return;
+
+      const userObj = JSON.parse(userString);
+      const user_id = userObj.user_id;
+
+      const response = await axios.get(`${url}/api_doctor/notification.php`, {
+        params: { user_id: user_id },
+      });
+
+      if (Array.isArray(response.data) && response.data.length > 0) {
+        const next = response.data[0];
+
+        if (Array.isArray(response.data) && response.data.length > 0) {
+  setNotifications(response.data); // <-- Lưu thông báo
+}
+
+        // 👉 (Tùy chọn) Lưu thông báo vào Firebase chat:
+        push(ref(db, "messages"), {
+          sender: "bot",
+          text: `Nhắc nhở: Bạn có lịch hẹn lúc ${next.appointment_time} hôm nay.`,
+          timestamp: Date.now(),
+        });
+      }
+    } catch (error) {
+      console.error("Lỗi khi kiểm tra lịch hẹn:", error);
+    }
+  };
+
+  checkUpcomingAppointment();
+}, []);
 
   // Keep all the original useEffect hooks
   // useEffect(() => {
@@ -137,12 +215,42 @@ const HomeScreen = ({ navigation }) => {
   const menuItems = [
     { id: 1, name: "Đặt Lịch", icon: "calendar-outline", navigate: "Booking" },
     { id: 2, name: "Nha sĩ", icon: "medkit-outline", navigate: "DoctorScreen" },
-    { id: 3, name: "Lịch sử điều trị", icon: "time-outline", navigate: "TreatmentHistoryScreen" },
-    { id: 4, name: "Hệ thống chi nhánh", icon: "globe-outline", navigate: "CenterDetails" },
-    { id: 5, name: "Danh mục dịch vụ", icon: "list-outline", navigate: "ServiceDetails" },
-    { id: 6, name: "Ảnh điều trị", icon: "images-outline", navigate: "TreatmentPhotosScreen" },
-    { id: 7, name: "Khuyến mãi",icon: "images-outline", navigate: "PromotionScreen" },
-    { id: 8, name: "Hồ sơ khám bệnh",icon: "medkit-outline", navigate: "PromotionScreen" },
+    {
+      id: 3,
+      name: "Lịch sử điều trị",
+      icon: "time-outline",
+      navigate: "TreatmentHistoryScreen",
+    },
+    {
+      id: 4,
+      name: "Hệ thống chi nhánh",
+      icon: "globe-outline",
+      navigate: "CenterDetails",
+    },
+    {
+      id: 5,
+      name: "Danh mục dịch vụ",
+      icon: "list-outline",
+      navigate: "ServiceDetails",
+    },
+    {
+      id: 6,
+      name: "Ảnh điều trị",
+      icon: "images-outline",
+      navigate: "TreatmentPhotosScreen",
+    },
+    {
+      id: 7,
+      name: "Khuyến mãi",
+      icon: "images-outline",
+      navigate: "PromotionScreen",
+    },
+    {
+      id: 8,
+      name: "Hồ sơ khám bệnh",
+      icon: "medkit-outline",
+      navigate: "ProfileSDentailcreen",
+    },
   ];
 
   // Week days for calendar
@@ -155,19 +263,35 @@ const HomeScreen = ({ navigation }) => {
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerLeft}>
-            <Text style={styles.welcomeText}>
-              Xin chào {user}
-            </Text>
+            <Text style={styles.welcomeText}>Xin chào {user}</Text>
             <Text style={styles.subHeaderText}>
               Hôm nay bạn không có lịch hẹn
             </Text>
           </View>
           <View style={styles.headerRight}>
-            <TouchableOpacity onPress={() => navigation.navigate("Notifications")}>
-              <Ionicons name="notifications-outline" size={24} color="#333" />
-            </TouchableOpacity>
-          </View>
+  <TouchableOpacity onPress={() => setShowNotifications(!showNotifications)} style={{ position: "relative" }}>
+    <Ionicons name="notifications-outline" size={28} color="#333" />
+    {notifications.length > 0 && (
+      <View style={{
+        position: "absolute",
+        top: -5,
+        right: -5,
+        backgroundColor: "red",
+        borderRadius: 10,
+        width: 18,
+        height: 18,
+        justifyContent: "center",
+        alignItems: "center"
+      }}>
+        <Text style={{ color: "white", fontSize: 10 }}>{notifications.length}</Text>
+      </View>
+    )}
+  </TouchableOpacity>
+</View>
+
         </View>
+
+
 
         {/* Banner with auto-sliding */}
         <View style={styles.bannerContainer}>
@@ -194,7 +318,7 @@ const HomeScreen = ({ navigation }) => {
                 key={index}
                 style={[
                   styles.dot,
-                  index === activeSlide ? styles.activeDot : null
+                  index === activeSlide ? styles.activeDot : null,
                 ]}
               />
             ))}
@@ -228,21 +352,23 @@ const HomeScreen = ({ navigation }) => {
               <Ionicons name="chevron-forward" size={24} color="#3498db" />
             </TouchableOpacity>
           </View>
-          
+
           <View style={styles.calendarWeekdays}>
             {weekdays.map((day, index) => (
-              <Text key={index} style={styles.weekdayText}>{day}</Text>
+              <Text key={index} style={styles.weekdayText}>
+                {day}
+              </Text>
             ))}
           </View>
-          
+
           {/* Calendar days - Simple example */}
           <View style={styles.calendarDays}>
             {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
-              <TouchableOpacity 
-                key={day} 
+              <TouchableOpacity
+                key={day}
                 style={[
                   styles.calendarDay,
-                  day === 1 && { marginLeft: '14.28%' }  // Offset for first day (starts on Monday)
+                  day === 1 && { marginLeft: "14.28%" }, // Offset for first day (starts on Monday)
                 ]}
               >
                 <Text style={day === 10 ? styles.activeDay : styles.dayText}>
@@ -252,6 +378,58 @@ const HomeScreen = ({ navigation }) => {
             ))}
           </View>
         </View>
+
+        {showNotifications && notifications.length > 0 && (
+  <View
+    style={{
+      position: "absolute",
+      top: 50,
+      right: 10,
+      backgroundColor: "white",
+      borderRadius: 10,
+      padding: 10,
+      elevation: 5,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.2,
+      shadowRadius: 4,
+      width: 250,
+      zIndex: 999,
+    }}
+  >
+    <Text style={{ fontWeight: "bold", marginBottom: 5 }}>🔔 Thông báo:</Text>
+    {notifications.map((noti, index) => (
+      <View
+        key={noti.appointment_id}
+        style={{
+          marginBottom: 10,
+          borderBottomWidth: 1,
+          borderBottomColor: "#eee",
+          paddingBottom: 8,
+        }}
+      >
+        <Text style={{ fontSize: 13 }}>
+          ⏰ Bạn có lịch hẹn lúc {noti.appointment_time} ngày{" "}
+          {noti.appointment_date}
+        </Text>
+
+        <TouchableOpacity
+          onPress={() => handleDismissNotification(noti.appointment_id)}
+          style={{
+            marginTop: 5,
+            backgroundColor: "#007AFF",
+            padding: 5,
+            borderRadius: 5,
+            alignSelf: "flex-end",
+          }}
+        >
+          <Text style={{ color: "white", fontSize: 12 }}>✅ Đã hiểu</Text>
+        </TouchableOpacity>
+      </View>
+    ))}
+  </View>
+)}
+
       </ScrollView>
 
       {/* Bottom Navigation (commented out as per your latest code) */}
@@ -282,6 +460,66 @@ const HomeScreen = ({ navigation }) => {
           <Text style={styles.navText}>Cá nhân</Text>
         </TouchableOpacity>
       </View> */}
+
+      {showMiniChat && (
+        <View style={styles.chatContainer}>
+          <View style={styles.chatHeader}>
+            <Text style={styles.chatTitle}>Hỗ trợ</Text>
+            <TouchableOpacity onPress={() => setShowMiniChat(false)}>
+              <Ionicons name="close" size={20} color="#fff" />
+            </TouchableOpacity>
+          </View>
+
+          <ScrollView style={styles.chatMessages}>
+            {chatMessages.map((msg) => (
+              <View
+                key={msg.id}
+                style={[
+                  styles.chatBubble,
+                  msg.sender === "bot" ? styles.botBubble : styles.userBubble,
+                ]}
+              >
+                <Text style={styles.chatText}>{msg.text}</Text>
+              </View>
+            ))}
+          </ScrollView>
+
+          <View style={styles.chatInputContainer}>
+            <TextInput
+              style={styles.chatInput}
+              placeholder="Nhập tin nhắn..."
+              value={newMessage}
+              onChangeText={setNewMessage}
+            />
+            <TouchableOpacity
+              style={styles.sendButton}
+              onPress={() => {
+                if (newMessage.trim()) {
+                  setChatMessages((prev) => [
+                    ...prev,
+                    { id: Date.now(), text: newMessage, sender: "user" },
+                    {
+                      id: Date.now() + 1,
+                      text: "Cảm ơn bạn đã gửi!",
+                      sender: "bot",
+                    },
+                  ]);
+                  setNewMessage("");
+                }
+              }}
+            >
+              <Ionicons name="send" size={20} color="#fff" />
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
+
+      <TouchableOpacity
+        style={styles.chatButton}
+        onPress={() => setShowMiniChat(true)}
+      >
+        <Ionicons name="chatbubbles" size={28} color="#fff" />
+      </TouchableOpacity>
     </SafeAreaView>
   );
 };
@@ -290,6 +528,124 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#f9f9f9",
+  },
+
+  chatContainer: {
+    position: "absolute",
+    bottom: 100,
+    right: 20,
+    width: 300,
+    maxHeight: 400,
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    overflow: "hidden",
+    borderWidth: 1,
+    borderColor: "#ccc",
+    zIndex: 999,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 10,
+  },
+
+  messages: { flex: 1, marginBottom: 10 },
+  user: {
+    backgroundColor: "#DCF8C6",
+    marginBottom: 4,
+    padding: 8,
+    borderRadius: 8,
+  },
+  admin: {
+    backgroundColor: "#FFF",
+    marginBottom: 4,
+    padding: 8,
+    borderRadius: 8,
+  },
+  inputRow: { flexDirection: "row" },
+  input: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 5,
+    paddingHorizontal: 10,
+  },
+  sendButton: {
+    backgroundColor: "#007AFF",
+    padding: 10,
+    borderRadius: 5,
+    marginLeft: 5,
+  },
+  chatHeader: {
+    backgroundColor: "#007AFF",
+    padding: 10,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  chatTitle: {
+    color: "#fff",
+    fontWeight: "bold",
+  },
+  chatMessages: {
+    padding: 10,
+    maxHeight: 250,
+  },
+  chatBubble: {
+    padding: 10,
+    borderRadius: 10,
+    marginBottom: 8,
+    maxWidth: "80%",
+  },
+  botBubble: {
+    backgroundColor: "#f0f0f0",
+    alignSelf: "flex-start",
+  },
+  userBubble: {
+    backgroundColor: "#007AFF",
+    alignSelf: "flex-end",
+  },
+  chatText: {
+    color: "#000",
+  },
+  chatInputContainer: {
+    flexDirection: "row",
+    borderTopWidth: 1,
+    borderTopColor: "#eee",
+    padding: 8,
+    alignItems: "center",
+  },
+  chatInput: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 20,
+    paddingHorizontal: 10,
+    height: 36,
+    marginRight: 8,
+  },
+  sendButton: {
+    backgroundColor: "#007AFF",
+    borderRadius: 20,
+    padding: 8,
+  },
+
+  chatButton: {
+    position: "absolute",
+    bottom: 30,
+    right: 20,
+    backgroundColor: "#007AFF", // màu xanh giống Messenger
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 8,
+    zIndex: 1000,
   },
   header: {
     flexDirection: "row",

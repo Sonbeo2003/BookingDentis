@@ -28,7 +28,7 @@ const SearchScreen = ({ navigation }) => {
 
     try {
       const response = await fetch(
-        `${url}/api_doctor/timkiemdv_tt.php?searchTerm=${encodeURIComponent(query)}`
+        `${url}/api_doctor/timkiemdichvu.php?searchTerm=${encodeURIComponent(query)}`
       );
       const data = await response.json();
 
@@ -44,18 +44,6 @@ const SearchScreen = ({ navigation }) => {
           price: parseFloat(service.price),
           description: service.description,
           time: `${service.duration_minutes} phút`,
-        })),
-        ...data.centers.map((center) => ({
-          id: center.clinic_id,
-          name: center.name,
-          type: "clinic",
-          image: center.picture ? `${BASE_IMAGE_URL}${center.picture}` : null,
-          address: center.address,
-          phone_number: center.phone_number,
-          email: center.email,
-          X_location: center.X_location,
-          Y_location: center.Y_location,
-          opening_hours: center.opening_hours,
         })),
       ];
 
@@ -80,23 +68,9 @@ const SearchScreen = ({ navigation }) => {
             giaDichVu: item.price,
             thoiGianThucHien: item.time,
           });
-        } else if (item.type === "center") {
-          navigation.navigate("Center", {
-            center: {
-              clinic_id: item.id,
-              name: item.name,
-              picture: item.image,
-              address: item.address,
-              phone_number: item.phone_number,
-              email: item.email,
-              X_location: item.X_location,
-              Y_location: item.Y_location,
-              opening_hours: item.opening_hours,
-            },
-          });
         }
       }}
-      key={`${item.id}-${item.type}`} // Sử dụng id kết hợp với type để tạo key duy nhất
+      key={`${item.id}-services`} // đơn giản hóa ke
     >
       <Image
         source={{ uri: item.image || "https://via.placeholder.com/60" }}
@@ -133,28 +107,7 @@ const SearchScreen = ({ navigation }) => {
             </View>
           </>
         )}
-        {item.type === "center" && (
-          <>
-            <View style={styles.infoRow}>
-              <Icon
-                name="map-marker"
-                size={16}
-                color="#f9b233"
-                style={styles.iconStyle}
-              />
-              <Text style={styles.centerAddress}>{item.address}</Text>
-            </View>
-            <View style={styles.infoRow}>
-              <Icon
-                name="phone"
-                size={16}
-                color="#f9b233"
-                style={styles.iconStyle}
-              />
-              <Text style={styles.centerPhone}>{item.phone_number}</Text>
-            </View>
-          </>
-        )}
+        
       </View>
     </TouchableOpacity>
   );
@@ -167,7 +120,7 @@ const SearchScreen = ({ navigation }) => {
     <View style={styles.container}>
       <TextInput
         style={styles.searchInput}
-        placeholder="Tìm kiếm dịch vụ hoặc chi nhánh..."
+        placeholder="Tìm kiếm dịch vụ..."
         value={query}
         onChangeText={setQuery}
       />

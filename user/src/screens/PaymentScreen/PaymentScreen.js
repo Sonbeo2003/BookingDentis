@@ -6,60 +6,148 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
+  Alert,
+  Linking,
 } from "react-native";
+import url from "../../../ipconfig";
 
 const PaymentScreen = ({ route, navigation }) => {
-  const { booking } = route.params;
+  const { booking, onPaymentSuccess } = route.params;
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("cash");
-  const [showBankInfo, setShowBankInfo] = useState(false); // Trạng thái hiển thị thông tin tài khoản
+  const [showBankInfo, setShowBankInfo] = useState(false);
+  const [payDepositOnly, setPayDepositOnly] = useState(!!booking.isDepositOnly); // nếu từ màn booking truyền vào là đặt cọc thì mặc định true
 
-  const handleConfirmPayment = () => {
+  const handleConfirmPayment = async () => {
     console.log("Phương thức thanh toán:", selectedPaymentMethod);
     console.log("Thanh toán cho lịch hẹn:", booking);
-    alert(
-      `Thanh toán thành công bằng ${
-        selectedPaymentMethod === "bank" ? "Tài khoản ngân hàng" : "Tiền mặt"
-      }!`
-    );
-    navigation.goBack();
+
+    if (selectedPaymentMethod === "bank") {
+      try {
+        const amount = payDepositOnly
+          ? booking.deposit_amount
+          : booking.final_price || 10000;
+        const response = await fetch(
+          `${url}/api_doctor/vnpay_php/thanhtoan_vnpay.php`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: `amount=${amount}&order_desc=Thanh toan hoa don&language=vn&appointment_id=${booking.appointment_id}&payment_method=${selectedPaymentMethod}&is_deposit_only=${payDepositOnly}`,
+          }
+        );
+
+        const data = await response.json();
+        if (data.payment_url) {
+          Linking.openURL(data.payment_url);
+          if (onPaymentSuccess) onPaymentSuccess();
+          navigation.goBack();
+        } else {
+          Alert.alert("Không tạo được link thanh toán");
+        }
+      } catch (error) {
+        Alert.alert("Lỗi gọi API thanh toán", error.message);
+      }
+    } else {
+      Alert.alert("Thanh toán tiền mặt!", "Bạn sẽ thanh toán tại quầy.");
+      if (onPaymentSuccess) onPaymentSuccess();
+      navigation.goBack();
+    }
   };
-  const sampleBooking = {
-    tensukien: "Hội thảo Công nghệ AI 2025",
-    tentrungtam: "Trung tâm Hội nghị Quốc gia",
-    ngayhen: "20/05/2025",
-    thoigianhen: "08:30 - 11:30",
-    dichvu: "Thuê phòng hội thảo + Dịch vụ âm thanh ánh sáng",
+
+  const statuses = {
+    0: "Chờ xác nhận",
+    1: "Đang thực hiện",
+    2: "Hoàn thành",
+    3: "Đã thanh toán",
+    4: "Đã hủy",
   };
-  
 
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <Text style={styles.title}>Thông tin thanh toán</Text>
 
-        {/* Hiển thị thông tin lịch hẹn */}
         <View style={styles.infoContainer}>
-          <Text style={styles.label}>Sự kiện:</Text>
-          <Text style={styles.value}>{booking.tensukien}</Text>
+          <Text style={styles.label}>Tên dịch vụ:</Text>
+          <Text style={styles.value}>
+  {Array.isArray(booking.services)
+    ? booking.services.map(s => (typeof s === 'string' ? s : s.name)).join(", ")
+    : booking.services}
+</Text>
         </View>
         <View style={styles.infoContainer}>
-          <Text style={styles.label}>Trung tâm:</Text>
-          <Text style={styles.value}>{booking.tentrungtam}</Text>
+          <Text style={styles.label}>Địa điểm:</Text>
+          <Text style={styles.value}>{booking.clinic_name}</Text>
+        </View>
+        <View style={styles.infoContainer}>
+          <Text style={styles.label}>Bác sĩ:</Text>
+          <Text style={styles.value}>{booking.doctor_name}</Text>
         </View>
         <View style={styles.infoContainer}>
           <Text style={styles.label}>Ngày hẹn:</Text>
-          <Text style={styles.value}>{booking.ngayhen}</Text>
+          <Text style={styles.value}>{booking.appointment_date}</Text>
         </View>
         <View style={styles.infoContainer}>
           <Text style={styles.label}>Thời gian:</Text>
-          <Text style={styles.value}>{booking.thoigianhen}</Text>
+          <Text style={styles.value}>{booking.appointment_time}</Text>
         </View>
         <View style={styles.infoContainer}>
-          <Text style={styles.label}>Dịch vụ:</Text>
-          <Text style={styles.value}>{booking.dichvu}</Text>
+          <Text style={styles.label}>Trạng thái:</Text>
+          <Text style={styles.value}>{statuses[booking.status]}</Text>
         </View>
 
-        {/* Chọn phương thức thanh toán */}
+        <View style={styles.infoContainer}>
+          <Text style={styles.label}>Số tiền đặt cọc:</Text>
+          <Text
+            style={[styles.value, { color: "#d32f2f", fontWeight: "bold" }]}
+          >
+            {new Intl.NumberFormat("vi-VN", {
+              style: "currency",
+              currency: "VND",
+            }).format(
+              payDepositOnly ? booking.deposit_amount : booking.final_price || 0
+            )}
+          </Text>
+        </View>
+        <View style={styles.infoContainer}>
+          <Text style={styles.label}>Số tiền cần thanh toán:</Text>
+          <Text style={[styles.value, { color: "#d32f2f", fontWeight: "bold" }]}>
+  {new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  }).format(
+    payDepositOnly
+      ? booking.deposit_amount
+      : booking.final_price
+  )}
+</Text>
+        </View>
+
+        <Text style={styles.subtitle}>Chọn loại thanh toán</Text>
+        <View style={styles.infoContainer}>
+          <TouchableOpacity
+            style={[
+              styles.paymentOption,
+              payDepositOnly && styles.selectedOption,
+              { flex: 1, marginRight: 5 },
+            ]}
+            onPress={() => setPayDepositOnly(true)}
+          >
+            <Text style={styles.paymentOptionText}>Đặt cọc</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.paymentOption,
+              !payDepositOnly && styles.selectedOption,
+              { flex: 1, marginLeft: 5 },
+            ]}
+            onPress={() => setPayDepositOnly(false)}
+          >
+            <Text style={styles.paymentOptionText}>Toàn bộ</Text>
+          </TouchableOpacity>
+        </View>
+
         <Text style={styles.subtitle}>Phương thức thanh toán</Text>
         <TouchableOpacity
           style={[
@@ -68,7 +156,7 @@ const PaymentScreen = ({ route, navigation }) => {
           ]}
           onPress={() => {
             setSelectedPaymentMethod("cash");
-            setShowBankInfo(false); // Ẩn thông tin tài khoản khi chọn tiền mặt
+            setShowBankInfo(false);
           }}
         >
           <Text style={styles.paymentOptionText}>Thanh toán tiền mặt</Text>
@@ -80,30 +168,13 @@ const PaymentScreen = ({ route, navigation }) => {
           ]}
           onPress={() => {
             setSelectedPaymentMethod("bank");
-            setShowBankInfo(true); // Hiển thị thông tin tài khoản khi chọn phương thức ngân hàng
+            setShowBankInfo(true);
           }}
         >
           <Text style={styles.paymentOptionText}>Tài khoản ngân hàng</Text>
         </TouchableOpacity>
-
-        {/* Hiển thị thông tin tài khoản ngân hàng và mã QR khi chọn "Tài khoản ngân hàng" */}
-        {showBankInfo && selectedPaymentMethod === "bank" && (
-          <View style={styles.bankInfoContainer}>
-            <Text style={styles.bankInfo}>Ngân hàng: MB Bank</Text>
-            <Text style={styles.bankInfo}>Chủ tài khoản: Trịnh Công Sơn</Text>
-            <Text style={styles.bankInfo}>Số tài khoản: 0101200323333</Text>
-            <Image
-              style={styles.qrCode}
-              source={{
-                uri: "https://qrcode-gen.com/images/qrcode-default.png",
-              }}
-              resizeMode="contain"
-            />
-          </View>
-        )}
       </ScrollView>
 
-      {/* Nút xác nhận thanh toán */}
       <TouchableOpacity
         style={styles.confirmButton}
         onPress={handleConfirmPayment}
@@ -115,14 +186,8 @@ const PaymentScreen = ({ route, navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-  scrollContainer: {
-    padding: 20,
-    paddingBottom: 80, // Thêm khoảng trống phía dưới để không bị che khuất nút
-  },
+  container: { flex: 1, backgroundColor: "#fff" },
+  scrollContainer: { padding: 20, paddingBottom: 80 },
   title: {
     fontSize: 24,
     fontWeight: "bold",
@@ -140,15 +205,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: 10,
   },
-  label: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#333",
-  },
-  value: {
-    fontSize: 16,
-    color: "#333",
-  },
+  label: { fontSize: 16, fontWeight: "bold", color: "#333" },
+  value: { fontSize: 16, color: "#333" },
   paymentOption: {
     padding: 15,
     marginVertical: 5,
@@ -157,33 +215,8 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
     alignItems: "center",
   },
-  selectedOption: {
-    backgroundColor: "#FFCC33",
-    borderColor: "#FF9900",
-  },
-  paymentOptionText: {
-    fontSize: 16,
-    color: "#333",
-  },
-  bankInfoContainer: {
-    marginTop: 20,
-    padding: 15,
-    backgroundColor: "#f0f0f0",
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    alignItems: "center",
-  },
-  bankInfo: {
-    fontSize: 16,
-    color: "#333",
-    marginVertical: 5,
-  },
-  qrCode: {
-    width: 150,
-    height: 150,
-    marginTop: 15,
-  },
+  selectedOption: { backgroundColor: "#FFCC33", borderColor: "#FF9900" },
+  paymentOptionText: { fontSize: 16, color: "#333" },
   confirmButton: {
     position: "absolute",
     bottom: 10,
@@ -194,11 +227,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: "center",
   },
-  confirmButtonText: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
+  confirmButtonText: { color: "#fff", fontSize: 18, fontWeight: "bold" },
 });
 
 export default PaymentScreen;
